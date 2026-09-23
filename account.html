@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .account-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: var(--sp-10);
+      align-items: start;
+      padding: var(--sp-10) 0 var(--sp-24);
+    }
+    /* Sidebar */
+    .account-sidebar { position: sticky; top: calc(var(--header-h) + var(--sp-4)); }
+    .account-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--clr-accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: var(--fs-xl);
+      font-weight: var(--fw-black); color: var(--clr-black);
+      margin-bottom: var(--sp-4); flex-shrink: 0;
+    }
+    .account-name {
+      font-family: var(--font-display); font-size: var(--fs-lg);
+      font-weight: var(--fw-black); letter-spacing: var(--ls-tight);
+      text-transform: uppercase; margin-bottom: var(--sp-1);
+    }
+    .account-email { font-size: var(--fs-xs); color: var(--clr-text-3); }
+    .account-nav { margin-top: var(--sp-6); display: flex; flex-direction: column; gap: 2px; }
+    .account-nav-item {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4);
+      font-size: var(--fs-xs); font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-wider); text-transform: uppercase;
+      color: var(--clr-text-3); cursor: pointer; background: none; border: none;
+      text-align: left; width: 100%;
+      transition: color var(--transition-fast), background var(--transition-fast);
+      border-radius: var(--radius-sm);
+    }
+    .account-nav-item:hover { color: var(--clr-text); background: var(--clr-bg-3); }
+    .account-nav-item.active { color: var(--clr-accent); background: var(--clr-accent-glow); }
+    .account-nav-item .nav-icon { font-size: var(--fs-base); flex-shrink: 0; }
+    /* Panels */
+    .account-panel { display: none; }
+    .account-panel.active { display: block; }
+    .panel-title {
+      font-size: clamp(var(--fs-2xl), 4vw, var(--fs-4xl));
+      letter-spacing: var(--ls-tight); margin-bottom: var(--sp-8);
+      padding-bottom: var(--sp-5); border-bottom: 1px solid var(--clr-border);
+    }
+    /* Order history */
+    .order-card {
+      background: var(--clr-surface); border: 1px solid var(--clr-border);
+      padding: var(--sp-5); margin-bottom: var(--sp-4);
+      transition: border-color var(--transition-fast);
+    }
+    .order-card:hover { border-color: var(--clr-border-light); }
+    .order-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: var(--sp-3); margin-bottom: var(--sp-4);
+    }
+    .order-id {
+      font-family: var(--font-mono); font-size: var(--fs-sm);
+      font-weight: var(--fw-bold); color: var(--clr-accent);
+      letter-spacing: var(--ls-wide);
+    }
+    .order-status {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      padding: 3px 10px; border-radius: var(--radius-sm);
+      font-size: var(--fs-xs); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wide); text-transform: uppercase;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .os-confirmed { color: var(--clr-accent); background: var(--clr-accent-glow); border: 1px solid rgba(184,245,58,.2); }
+    .os-shipped   { color: #60a5fa; background: rgba(96,165,250,.08); border: 1px solid rgba(96,165,250,.2); }
+    .os-delivered { color: var(--clr-text-2); background: var(--clr-bg-4); border: 1px solid var(--clr-border); }
+    .os-cancelled { color: var(--clr-red); background: rgba(255,45,45,.08); border: 1px solid rgba(255,45,45,.2); }
+    .os-pending   { color: #f59e0b; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); }
+    .order-items-preview { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+    .order-thumb {
+      width: 52px; height: 64px; object-fit: cover;
+      background: var(--clr-bg-4); flex-shrink: 0;
+    }
+    .order-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: var(--sp-3);
+      padding-top: var(--sp-4); border-top: 1px solid var(--clr-border);
+    }
+    .order-total-label {
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      letter-spacing: var(--ls-wide); text-transform: uppercase;
+    }
+    .order-total-val {
+      font-family: var(--font-display); font-size: var(--fs-lg);
+      font-weight: var(--fw-black); color: var(--clr-accent);
+    }
+    /* Addresses */
+    .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+    .address-card {
+      background: var(--clr-surface); border: 1px solid var(--clr-border);
+      padding: var(--sp-5); position: relative;
+    }
+    .address-card.default { border-color: var(--clr-accent); }
+    .address-default-badge {
+      position: absolute; top: var(--sp-3); right: var(--sp-3);
+    }
+    .address-label {
+      font-size: var(--fs-xs); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wider); text-transform: uppercase;
+      color: var(--clr-text-2); margin-bottom: var(--sp-3);
+    }
+    .address-text {
+      font-size: var(--fs-sm); color: var(--clr-text-2);
+      line-height: var(--lh-loose);
+    }
+    .address-actions { display: flex; gap: var(--sp-3); margin-top: var(--sp-4); }
+    .add-address-card {
+      background: var(--clr-bg-3); border: 1px dashed var(--clr-border);
+      padding: var(--sp-5); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: var(--sp-3);
+      cursor: pointer; min-height: 140px;
+      transition: border-color var(--transition-fast);
+    }
+    .add-address-card:hover { border-color: var(--clr-accent); }
+    .add-address-card span {
+      font-size: var(--fs-3xl); color: var(--clr-text-3); line-height: 1;
+    }
+    .add-address-card p {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wider);
+      text-transform: uppercase; color: var(--clr-text-3);
+    }
+    /* Wishlist in account */
+    .account-wishlist-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--sp-4); }
+    /* Logout */
+    .logout-btn { color: var(--clr-red) !important; margin-top: var(--sp-4); }
+    /* Mobile */
+    @media (max-width: 768px) {
+      .account-layout { grid-template-columns: 1fr; }
+      .account-sidebar { position: static; }
+      .account-nav { flex-direction: row; flex-wrap: wrap; gap: var(--sp-2); }
+      .account-nav-item { width: auto; flex: 1; justify-content: center; min-width: 80px; }
+      .address-grid { grid-template-columns: 1fr; }
+      .account-wishlist-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <div class="page-hero">
+      <div class="container">
+        <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Account</span></div>
+        <h1>My Account</h1>
+      </div>
+    </div>
+
+    <!-- Not logged in -->
+    <div id="account-gate" class="empty-state hidden">
+      <div class="empty-icon">◎</div>
+      <h3>Sign In to View Your Account</h3>
+      <p>Log in or create an account to see your orders, addresses and wishlist.</p>
+      <div style="display:flex;gap:var(--sp-4);flex-wrap:wrap;justify-content:center;margin-top:var(--sp-6)">
+        <a href="login.html" class="btn btn-primary">Login</a>
+        <a href="signup.html" class="btn btn-secondary">Create Account</a>
+      </div>
+    </div>
+
+    <!-- Account content -->
+    <div id="account-content" class="hidden">
+      <div class="container">
+        <div class="account-layout">
+
+          <!-- Sidebar -->
+          <aside class="account-sidebar">
+            <div style="display:flex;align-items:center;gap:var(--sp-4)">
+              <div class="account-avatar" id="acc-avatar">??</div>
+              <div>
+                <div class="account-name" id="acc-name">—</div>
+                <div class="account-email" id="acc-email">—</div>
+              </div>
+            </div>
+            <nav class="account-nav" aria-label="Account navigation">
+              <button class="account-nav-item active" data-panel="orders">
+                <span class="nav-icon">📦</span> Orders
+              </button>
+              <button class="account-nav-item" data-panel="addresses">
+                <span class="nav-icon">📍</span> Addresses
+              </button>
+              <button class="account-nav-item" data-panel="wishlist">
+                <span class="nav-icon">♡</span> Wishlist
+              </button>
+              <button class="account-nav-item logout-btn" id="logout-btn">
+                <span class="nav-icon">→</span> Log Out
+              </button>
+            </nav>
+          </aside>
+
+          <!-- Panels -->
+          <div>
+
+            <!-- Orders -->
+            <div class="account-panel active" id="panel-orders">
+              <h2 class="panel-title">Order History</h2>
+              <div id="orders-loading" class="loading-overlay" style="padding:var(--sp-10)">
+                <div class="spinner"></div>
+              </div>
+              <div id="orders-list"></div>
+            </div>
+
+            <!-- Addresses -->
+            <div class="account-panel" id="panel-addresses">
+              <h2 class="panel-title">Saved Addresses</h2>
+              <div class="address-grid" id="addresses-grid"></div>
+            </div>
+
+            <!-- Wishlist -->
+            <div class="account-panel" id="panel-wishlist">
+              <h2 class="panel-title">Wishlist</h2>
+              <div class="account-wishlist-grid product-grid" id="acc-wishlist-grid"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add address modal -->
+  <div class="modal-overlay" id="addr-modal" role="dialog" aria-modal="true" aria-labelledby="addr-modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="addr-modal-title">Add New Address</h3>
+        <button class="modal-close" id="addr-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="addr-form" novalidate>
+          <div class="form-grid" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="af-first">First Name</label>
+              <input class="form-control" id="af-first" type="text" autocomplete="given-name" />
+              <div class="form-error" id="err-af-first"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="af-last">Last Name</label>
+              <input class="form-control" id="af-last" type="text" autocomplete="family-name" />
+              <div class="form-error" id="err-af-last"></div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="af-line1">Address Line 1</label>
+            <input class="form-control" id="af-line1" type="text" autocomplete="address-line1" />
+            <div class="form-error" id="err-af-line1"></div>
+          </div>
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label" for="af-line2">Line 2 (optional)</label>
+            <input class="form-control" id="af-line2" type="text" autocomplete="address-line2" />
+          </div>
+          <div class="form-grid" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label" for="af-city">City</label>
+              <input class="form-control" id="af-city" type="text" autocomplete="address-level2" />
+              <div class="form-error" id="err-af-city"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="af-state">State</label>
+              <input class="form-control" id="af-state" type="text" maxlength="2" autocomplete="address-level1" />
+              <div class="form-error" id="err-af-state"></div>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-bottom:var(--sp-6)">
+            <div class="form-group">
+              <label class="form-label" for="af-zip">ZIP</label>
+              <input class="form-control" id="af-zip" type="text" maxlength="10" autocomplete="postal-code" />
+              <div class="form-error" id="err-af-zip"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="af-country">Country</label>
+              <select class="form-control" id="af-country" autocomplete="country">
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AU">Australia</option>
+                <option value="DE">Germany</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="addr-save-btn">
+            Save Address
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/account.js"></script>
+</body>
+</html>

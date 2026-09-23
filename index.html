@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="VOIDWEAR — Heavyweight streetwear for the underground. New drops, limited runs, no restocks." />
+  <title>VOIDWEAR — New Drop</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    /* ── HOME-SPECIFIC STYLES ────────────────────────────── */
+
+    /* Hero */
+    .home-hero {
+      height: 100svh;
+      min-height: 600px;
+      max-height: 1000px;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: var(--sp-16);
+      position: relative;
+      overflow: hidden;
+      background: var(--clr-black);
+    }
+    .home-hero__bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=1600&q=85')
+                  center/cover no-repeat;
+      opacity: 0.45;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .home-hero__bg.loaded { transform: scale(1); }
+    .home-hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.5) 50%,
+        rgba(0,0,0,0.15) 100%
+      );
+    }
+    .home-hero__content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+    .home-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-3);
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      margin-bottom: var(--sp-5);
+    }
+    .home-hero__eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 2px;
+      background: var(--clr-accent);
+    }
+    .home-hero__title {
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      color: var(--clr-white);
+      margin-bottom: var(--sp-6);
+    }
+    .home-hero__title em {
+      color: var(--clr-accent);
+      font-style: normal;
+      display: block;
+    }
+    .home-hero__sub {
+      font-size: var(--fs-base);
+      color: var(--clr-text-2);
+      line-height: var(--lh-loose);
+      max-width: 480px;
+      margin-bottom: var(--sp-8);
+    }
+    .home-hero__ctas {
+      display: flex;
+      gap: var(--sp-4);
+      flex-wrap: wrap;
+    }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: var(--sp-8);
+      right: var(--gutter);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      z-index: 1;
+    }
+    .hero-scroll-hint::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--clr-text-3), transparent);
+    }
+
+    /* Drop countdown section */
+    .drop-section {
+      background: var(--clr-black);
+      border-top: 1px solid var(--clr-border);
+      border-bottom: 1px solid var(--clr-border);
+      padding: var(--sp-16) 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .drop-section::before {
+      content: 'DROP';
+      position: absolute;
+      font-family: var(--font-display);
+      font-size: 20vw;
+      font-weight: var(--fw-black);
+      color: rgba(255,255,255,0.02);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+    .drop-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-16);
+      align-items: center;
+    }
+    .drop-info {}
+    .drop-title {
+      font-size: clamp(var(--fs-3xl), 5vw, var(--fs-5xl));
+      margin-bottom: var(--sp-4);
+    }
+    .drop-subtitle {
+      font-size: var(--fs-sm);
+      color: var(--clr-text-3);
+      letter-spacing: var(--ls-wide);
+      text-transform: uppercase;
+      margin-bottom: var(--sp-6);
+    }
+    .drop-desc {
+      color: var(--clr-text-2);
+      font-size: var(--fs-base);
+      line-height: var(--lh-loose);
+      max-width: 420px;
+      margin-bottom: var(--sp-8);
+    }
+    .drop-timer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-5);
+    }
+    .drop-timer-label {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+    }
+    .drop-product-img {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: var(--clr-bg-2);
+    }
+    .drop-product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .drop-product-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--clr-border);
+      pointer-events: none;
+    }
+
+    /* Category rail section */
+    .cat-section {
+      padding: var(--sp-16) 0 var(--sp-12);
+    }
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--sp-3);
+      margin-top: var(--sp-8);
+    }
+    .cat-card {
+      position: relative;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+      background: var(--clr-bg-3);
+      display: flex;
+      align-items: flex-end;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .cat-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.55;
+      transition: transform var(--transition-slow), opacity var(--transition-slow);
+    }
+    .cat-card:hover img {
+      transform: scale(1.08);
+      opacity: 0.7;
+    }
+    .cat-card__label {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: var(--sp-4) var(--sp-4) var(--sp-5);
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+      font-family: var(--font-display);
+      font-size: var(--fs-base);
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight);
+      text-transform: uppercase;
+      color: var(--clr-white);
+      transition: color var(--transition-fast);
+    }
+    .cat-card:hover .cat-card__label {
+      color: var(--clr-accent);
+    }
+    .cat-card__count {
+      font-size: var(--fs-xs);
+      color: var(--clr-text-3);
+      letter-spacing: var(--ls-wider);
+      display: block;
+      font-family: var(--font-body);
+      font-weight: var(--fw-normal);
+      margin-top: 2px;
+    }
+
+    /* Featured products */
+    .featured-section {
+      padding: var(--sp-16) 0;
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-4);
+    }
+    /* First card oversized */
+    .featured-grid .product-card:first-child {
+      grid-row: span 2;
+    }
+    .featured-grid .product-card:first-child .product-card__img-wrap {
+      aspect-ratio: unset;
+      height: 100%;
+      min-height: 400px;
+    }
+
+    /* Marquee ticker */
+    .ticker-wrap {
+      background: var(--clr-accent);
+      overflow: hidden;
+      padding: var(--sp-3) 0;
+      white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-flex;
+      animation: ticker 20s linear infinite;
+    }
+    .ticker-inner:hover { animation-play-state: paused; }
+    .ticker-item {
+      font-family: var(--font-display);
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-black);
+      padding: 0 var(--sp-6);
+    }
+    .ticker-sep {
+      color: rgba(0,0,0,0.3);
+      padding: 0 var(--sp-2);
+    }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* New drops strip */
+    .new-drops-section { padding: var(--sp-16) 0; }
+
+    /* Social proof strip */
+    .proof-section {
+      padding: var(--sp-12) 0;
+      border-top: 1px solid var(--clr-border);
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-8);
+      text-align: center;
+    }
+    .proof-stat {
+      font-family: var(--font-display);
+      font-size: clamp(var(--fs-3xl), 5vw, var(--fs-5xl));
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight);
+      color: var(--clr-accent);
+    }
+    .proof-label {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      margin-top: var(--sp-2);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .cat-grid { grid-template-columns: repeat(3, 1fr); }
+      .cat-grid .cat-card:nth-child(4),
+      .cat-grid .cat-card:nth-child(5) { display: none; }
+      .drop-inner { grid-template-columns: 1fr; gap: var(--sp-8); }
+      .drop-product-img { max-width: 400px; }
+      .featured-grid { grid-template-columns: repeat(2, 1fr); }
+      .featured-grid .product-card:first-child { grid-row: span 1; }
+      .featured-grid .product-card:first-child .product-card__img-wrap { height: auto; min-height: unset; }
+    }
+    @media (max-width: 768px) {
+      .home-hero { max-height: 700px; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-grid .cat-card:nth-child(4) { display: flex; }
+      .cat-grid .cat-card:nth-child(5) { display: none; }
+      .proof-grid { grid-template-columns: 1fr 1fr; }
+      .featured-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .cat-grid { grid-template-columns: 1fr 1fr; }
+      .home-hero__ctas { flex-direction: column; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .proof-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header injected by JS -->
+  <div id="header-placeholder"></div>
+
+  <main class="page-main" style="padding-top:0">
+
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <section class="home-hero" aria-label="Hero banner">
+      <div class="home-hero__bg" id="hero-bg"></div>
+      <div class="home-hero__overlay"></div>
+      <div class="container home-hero__content">
+        <div class="home-hero__eyebrow">Signal Drop 001 — Live Now</div>
+        <h1 class="home-hero__title">
+          THE NEW<br>
+          <em>VOID</em>
+          DROP.
+        </h1>
+        <p class="home-hero__sub">
+          100 pieces. Hand-stamped. Never restocked.<br>
+          Heavyweight streetwear built for the underground.
+        </p>
+        <div class="home-hero__ctas">
+          <a href="shop.html?badge=new" class="btn btn-primary btn-lg">Shop the Drop</a>
+          <a href="shop.html" class="btn btn-secondary btn-lg">Browse All</a>
+          <a href="login.html" class="btn btn-ghost btn-lg" id="hero-login-btn"
+             style="border:1px solid var(--clr-border-light)">
+            Login / Sign Up
+          </a>
+        </div>
+      </div>
+      <div class="hero-scroll-hint" aria-hidden="true">Scroll</div>
+    </section>
+
+    <!-- ── TICKER ────────────────────────────────────────── -->
+    <div class="ticker-wrap" aria-hidden="true">
+      <div class="ticker-inner" id="ticker-inner">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- ── CATEGORY RAIL ─────────────────────────────────── -->
+    <section class="cat-section page-section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label">Categories</div>
+            <h2 class="section-title">Shop by <em>Category</em></h2>
+          </div>
+          <a href="shop.html" class="section-link">View All →</a>
+        </div>
+        <div class="cat-grid" id="cat-grid">
+          <!-- Skeleton -->
+          <div class="cat-card" style="background:var(--clr-bg-3);"></div>
+          <div class="cat-card" style="background:var(--clr-bg-3);"></div>
+          <div class="cat-card" style="background:var(--clr-bg-3);"></div>
+          <div class="cat-card" style="background:var(--clr-bg-3);"></div>
+          <div class="cat-card" style="background:var(--clr-bg-3);"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DROP COUNTDOWN ─────────────────────────────────── -->
+    <section class="drop-section" id="drop-section" aria-label="Next drop countdown">
+      <div class="container">
+        <div class="drop-inner">
+          <div class="drop-info">
+            <div class="section-label">Next Drop</div>
+            <h2 class="drop-title" id="drop-title">Loading…</h2>
+            <p class="drop-subtitle" id="drop-subtitle"></p>
+            <p class="drop-desc" id="drop-desc"></p>
+            <div class="drop-timer-wrap">
+              <div class="drop-timer-label">Drop goes live in</div>
+              <div class="countdown" id="countdown" role="timer" aria-live="off">
+                <div class="countdown-block">
+                  <span class="countdown-num" id="cd-days">00</span>
+                  <span class="countdown-label">Days</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-block">
+                  <span class="countdown-num" id="cd-hours">00</span>
+                  <span class="countdown-label">Hrs</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-block">
+                  <span class="countdown-num" id="cd-mins">00</span>
+                  <span class="countdown-label">Min</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-block">
+                  <span class="countdown-num" id="cd-secs">00</span>
+                  <span class="countdown-label">Sec</span>
+                </div>
+              </div>
+              <a href="#" class="btn btn-primary" id="drop-cta">View Drop →</a>
+            </div>
+          </div>
+          <div class="drop-product-img">
+            <img id="drop-img"
+                 src="https://images.unsplash.com/photo-1620799139507-2a76f79a2f4d?w=600&q=80"
+                 alt="Upcoming drop product"
+                 loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FEATURED PRODUCTS ──────────────────────────────── -->
+    <section class="featured-section page-section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label">Featured</div>
+            <h2 class="section-title">Staff <em>Picks</em></h2>
+          </div>
+          <a href="shop.html" class="section-link">Shop All →</a>
+        </div>
+        <div class="featured-grid product-grid" id="featured-grid">
+          <!-- skeletons rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROOF STRIP ────────────────────────────────────── -->
+    <section class="proof-section">
+      <div class="container">
+        <div class="proof-grid">
+          <div>
+            <div class="proof-stat">12K+</div>
+            <div class="proof-label">Orders Shipped</div>
+          </div>
+          <div>
+            <div class="proof-stat">100%</div>
+            <div class="proof-label">Heavyweight Cotton</div>
+          </div>
+          <div>
+            <div class="proof-stat">48hr</div>
+            <div class="proof-label">Dispatch Guarantee</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── NEW DROPS ──────────────────────────────────────── -->
+    <section class="new-drops-section page-section">
+      <div class="container">
+        <div class="section-rule">
+          <h2>New <em style="color:var(--clr-accent);font-style:normal">Drops</em></h2>
+        </div>
+        <div class="product-grid" id="new-drops-grid">
+          <!-- rendered by JS -->
+        </div>
+        <div style="text-align:center;margin-top:var(--sp-12)">
+          <a href="shop.html?badge=new" class="btn btn-secondary btn-lg">
+            See All New Drops
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer injected by JS -->
+  <div id="footer-placeholder"></div>
+
+  <script type="module" src="js/pages/home.js"></script>
+</body>
+</html>

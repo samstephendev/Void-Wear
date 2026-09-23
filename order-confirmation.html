@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .confirm-wrap {
+      max-width: 680px;
+      margin: var(--sp-16) auto var(--sp-24);
+      padding: 0 var(--gutter);
+    }
+    .confirm-hero {
+      text-align: center;
+      padding: var(--sp-16) var(--sp-8);
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      margin-bottom: var(--sp-6);
+      position: relative;
+      overflow: hidden;
+    }
+    .confirm-hero::before {
+      content: '✓';
+      position: absolute;
+      font-family: var(--font-display);
+      font-size: 20rem;
+      font-weight: var(--fw-black);
+      color: rgba(184,245,58,0.03);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .confirm-check {
+      width: 72px; height: 72px;
+      background: var(--clr-accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--sp-6);
+      font-size: var(--fs-3xl);
+      color: var(--clr-black);
+      animation: pop-in .4s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    @keyframes pop-in {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .confirm-title {
+      font-size: clamp(var(--fs-3xl), 6vw, var(--fs-5xl));
+      letter-spacing: var(--ls-tight);
+      margin-bottom: var(--sp-3);
+    }
+    .confirm-subtitle {
+      font-size: var(--fs-base);
+      color: var(--clr-text-2);
+      margin-bottom: var(--sp-4);
+    }
+    .confirm-order-num {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: var(--fs-lg);
+      font-weight: var(--fw-bold);
+      color: var(--clr-accent);
+      background: var(--clr-accent-glow);
+      border: 1px solid rgba(184,245,58,.25);
+      padding: var(--sp-2) var(--sp-5);
+      letter-spacing: var(--ls-wide);
+      margin-top: var(--sp-2);
+    }
+    .confirm-section {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      padding: var(--sp-6);
+      margin-bottom: var(--sp-4);
+    }
+    .confirm-section h3 {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-3);
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .confirm-item {
+      display: flex;
+      gap: var(--sp-4);
+      align-items: center;
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .confirm-item:last-child { border-bottom: none; }
+    .confirm-item img {
+      width: 56px; height: 68px;
+      object-fit: cover; background: var(--clr-bg-4); flex-shrink: 0;
+    }
+    .confirm-item-name {
+      font-family: var(--font-display);
+      font-size: var(--fs-sm); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight); text-transform: uppercase;
+    }
+    .confirm-item-meta {
+      font-size: var(--fs-xs); color: var(--clr-text-3); margin-top: 2px;
+    }
+    .confirm-item-price {
+      margin-left: auto;
+      font-family: var(--font-display);
+      font-size: var(--fs-base); font-weight: var(--fw-black);
+      color: var(--clr-accent); white-space: nowrap; flex-shrink: 0;
+    }
+    .address-block {
+      font-size: var(--fs-sm);
+      color: var(--clr-text-2);
+      line-height: var(--lh-loose);
+    }
+    .totals-table { width: 100%; }
+    .totals-table td {
+      padding: var(--sp-2) 0;
+      font-size: var(--fs-sm);
+      color: var(--clr-text-2);
+    }
+    .totals-table td:last-child { text-align: right; }
+    .totals-table tr.grand-total td {
+      font-family: var(--font-display);
+      font-size: var(--fs-xl); font-weight: var(--fw-black);
+      color: var(--clr-text);
+      border-top: 1px solid var(--clr-border);
+      padding-top: var(--sp-4);
+    }
+    .totals-table tr.grand-total td:last-child { color: var(--clr-accent); }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      padding: var(--sp-1) var(--sp-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wide); text-transform: uppercase;
+    }
+    .status-confirmed { background: var(--clr-accent-glow); color: var(--clr-accent); border: 1px solid rgba(184,245,58,.25); }
+    .confirm-actions {
+      display: flex; gap: var(--sp-4); flex-wrap: wrap;
+      justify-content: center; margin-top: var(--sp-8);
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+
+    <!-- Loading -->
+    <div id="conf-loading" class="loading-overlay" style="padding-top:var(--sp-24)">
+      <div class="spinner"></div><p>Loading your order…</p>
+    </div>
+
+    <!-- Error -->
+    <div id="conf-error" class="empty-state hidden">
+      <div class="empty-icon">◈</div>
+      <h3>Order Not Found</h3>
+      <p>We couldn't find that order. Check your account for order history.</p>
+      <a href="account.html" class="btn btn-primary mt-4">My Orders</a>
+    </div>
+
+    <!-- Content -->
+    <div id="conf-content" class="confirm-wrap hidden">
+
+      <!-- Hero -->
+      <div class="confirm-hero">
+        <div class="confirm-check" aria-hidden="true">✓</div>
+        <h1 class="confirm-title">Order Confirmed</h1>
+        <p class="confirm-subtitle">
+          Thanks for your order — it's been received and is being processed.
+        </p>
+        <div class="confirm-order-num" id="conf-order-num">ORD-—</div>
+      </div>
+
+      <!-- Status + shipping -->
+      <div class="confirm-section">
+        <h3>Order Status</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-3)">
+          <span class="status-badge status-confirmed">
+            <span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span>
+            Confirmed
+          </span>
+          <span style="font-size:var(--fs-xs);color:var(--clr-text-3);letter-spacing:var(--ls-normal)">
+            Estimated dispatch: <strong style="color:var(--clr-text)">Within 48 hours</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="confirm-section">
+        <h3>Items Ordered</h3>
+        <div id="conf-items"></div>
+      </div>
+
+      <!-- 2-col: address + totals -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4)">
+        <div class="confirm-section">
+          <h3>Shipping To</h3>
+          <div class="address-block" id="conf-address"></div>
+        </div>
+        <div class="confirm-section">
+          <h3>Payment</h3>
+          <div style="font-size:var(--fs-sm);color:var(--clr-text-2);margin-bottom:var(--sp-4)" id="conf-payment"></div>
+          <table class="totals-table" id="conf-totals"></table>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="confirm-actions">
+        <a href="account.html" class="btn btn-secondary">View All Orders</a>
+        <a href="shop.html" class="btn btn-primary">Keep Shopping</a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/orderConfirmation.js"></script>
+</body>
+</html>

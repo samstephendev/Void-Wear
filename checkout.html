@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: var(--sp-10);
+      align-items: start;
+      padding: var(--sp-10) 0 var(--sp-20);
+    }
+    /* Step indicator */
+    .checkout-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: var(--sp-8);
+    }
+    .checkout-step {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 2px solid var(--clr-border);
+      flex: 1;
+      justify-content: center;
+      transition: color var(--transition-fast), border-color var(--transition-fast);
+    }
+    .checkout-step.active {
+      color: var(--clr-accent);
+      border-bottom-color: var(--clr-accent);
+    }
+    .checkout-step.done {
+      color: var(--clr-text-2);
+      border-bottom-color: var(--clr-text-2);
+    }
+    .step-num {
+      width: 20px; height: 20px;
+      background: var(--clr-bg-4);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; line-height: 1;
+      flex-shrink: 0;
+    }
+    .checkout-step.active .step-num { background: var(--clr-accent); color: var(--clr-black); }
+    .checkout-step.done  .step-num { background: var(--clr-text-2); color: var(--clr-black); }
+
+    /* Form sections */
+    .checkout-section {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      padding: var(--sp-6);
+      margin-bottom: var(--sp-4);
+    }
+    .checkout-section h2 {
+      font-size: var(--fs-sm);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      margin-bottom: var(--sp-5);
+      padding-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--clr-border);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+    .section-icon { color: var(--clr-accent); font-size: var(--fs-base); }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--sp-4);
+    }
+
+    /* Payment method cards */
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+    }
+    .payment-card {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-4) var(--sp-5);
+      border: 1px solid var(--clr-border);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      background: var(--clr-bg-3);
+    }
+    .payment-card:hover { border-color: var(--clr-border-light); }
+    .payment-card.selected {
+      border-color: var(--clr-accent);
+      background: var(--clr-accent-glow);
+    }
+    .payment-card input[type="radio"] { flex-shrink: 0; }
+    .payment-card-label {
+      flex: 1;
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-normal);
+      text-transform: uppercase;
+    }
+    .payment-card-icons {
+      display: flex;
+      gap: var(--sp-2);
+      font-size: var(--fs-xs);
+      color: var(--clr-text-3);
+    }
+    .card-form {
+      margin-top: var(--sp-5);
+      padding-top: var(--sp-5);
+      border-top: 1px solid var(--clr-border);
+      display: none;
+    }
+    .card-form.visible { display: block; }
+    .card-number-wrap { position: relative; }
+    .card-number-wrap .card-icon {
+      position: absolute;
+      right: var(--sp-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--fs-lg);
+      pointer-events: none;
+    }
+
+    /* Order items in summary */
+    .summary-item {
+      display: flex;
+      gap: var(--sp-3);
+      align-items: center;
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .summary-item:last-of-type { border-bottom: none; }
+    .summary-item img {
+      width: 52px; height: 64px;
+      object-fit: cover;
+      background: var(--clr-bg-4);
+      flex-shrink: 0;
+    }
+    .summary-item-name {
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-tight);
+      text-transform: uppercase;
+      color: var(--clr-text);
+      line-height: var(--lh-snug);
+    }
+    .summary-item-meta {
+      font-size: var(--fs-xs);
+      color: var(--clr-text-3);
+      margin-top: 2px;
+    }
+    .summary-item-price {
+      margin-left: auto;
+      font-family: var(--font-display);
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-black);
+      color: var(--clr-accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Place order button states */
+    .place-order-btn { position: relative; }
+    .place-order-btn.loading { pointer-events: none; }
+    .place-order-btn.loading::after {
+      content: '';
+      position: absolute;
+      right: var(--sp-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: var(--clr-black);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    @media (max-width: 960px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .order-summary-box { position: static; }
+    }
+    @media (max-width: 640px) {
+      .form-grid   { grid-template-columns: 1fr; }
+      .form-grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <div class="page-hero">
+      <div class="container">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a><span>/</span>
+          <a href="cart.html">Cart</a><span>/</span>
+          <span>Checkout</span>
+        </div>
+        <h1>Checkout</h1>
+      </div>
+    </div>
+
+    <!-- Empty cart redirect notice -->
+    <div id="checkout-empty" class="empty-state hidden">
+      <div class="empty-icon">◻</div>
+      <h3>Nothing to Check Out</h3>
+      <p>Your cart is empty. Add some items first.</p>
+      <a href="shop.html" class="btn btn-primary mt-4">Shop Now</a>
+    </div>
+
+    <div class="container" id="checkout-content">
+      <!-- Step bar -->
+      <div class="checkout-steps" id="checkout-steps">
+        <div class="checkout-step active" data-step="1">
+          <span class="step-num">1</span> Shipping
+        </div>
+        <div class="checkout-step" data-step="2">
+          <span class="step-num">2</span> Payment
+        </div>
+        <div class="checkout-step" data-step="3">
+          <span class="step-num">3</span> Review
+        </div>
+      </div>
+
+      <div class="checkout-layout">
+
+        <!-- Left: form -->
+        <div>
+
+          <!-- Step 1: Shipping address -->
+          <div id="step-1" class="checkout-section">
+            <h2><span class="section-icon">📦</span> Shipping Address</h2>
+            <form id="shipping-form" novalidate>
+              <div class="form-grid" style="margin-bottom:var(--sp-4)">
+                <div class="form-group">
+                  <label class="form-label" for="s-first">First Name</label>
+                  <input class="form-control" id="s-first" name="firstName"
+                         type="text" placeholder="Alex" autocomplete="given-name" />
+                  <div class="form-error" id="err-s-first"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="s-last">Last Name</label>
+                  <input class="form-control" id="s-last" name="lastName"
+                         type="text" placeholder="Void" autocomplete="family-name" />
+                  <div class="form-error" id="err-s-last"></div>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:var(--sp-4)">
+                <label class="form-label" for="s-line1">Address Line 1</label>
+                <input class="form-control" id="s-line1" name="line1"
+                       type="text" placeholder="420 Graffiti Alley" autocomplete="address-line1" />
+                <div class="form-error" id="err-s-line1"></div>
+              </div>
+              <div class="form-group" style="margin-bottom:var(--sp-4)">
+                <label class="form-label" for="s-line2">Address Line 2 <span style="color:var(--clr-text-3)">(optional)</span></label>
+                <input class="form-control" id="s-line2" name="line2"
+                       type="text" placeholder="Apt, suite, unit…" autocomplete="address-line2" />
+              </div>
+              <div class="form-grid" style="margin-bottom:var(--sp-4)">
+                <div class="form-group">
+                  <label class="form-label" for="s-city">City</label>
+                  <input class="form-control" id="s-city" name="city"
+                         type="text" placeholder="Los Angeles" autocomplete="address-level2" />
+                  <div class="form-error" id="err-s-city"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="s-state">State</label>
+                  <input class="form-control" id="s-state" name="state"
+                         type="text" placeholder="CA" maxlength="2" autocomplete="address-level1" />
+                  <div class="form-error" id="err-s-state"></div>
+                </div>
+              </div>
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label class="form-label" for="s-zip">ZIP Code</label>
+                  <input class="form-control" id="s-zip" name="zip"
+                         type="text" placeholder="90001" maxlength="10" autocomplete="postal-code" />
+                  <div class="form-error" id="err-s-zip"></div>
+                </div>
+                <div class="form-group" style="grid-column:span 2">
+                  <label class="form-label" for="s-country">Country</label>
+                  <select class="form-control" id="s-country" name="country" autocomplete="country">
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="AU">Australia</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="JP">Japan</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:var(--sp-4)">
+                <label class="form-label" for="s-email">Email Address</label>
+                <input class="form-control" id="s-email" name="email"
+                       type="email" placeholder="you@email.com" autocomplete="email" />
+                <div class="form-error" id="err-s-email"></div>
+              </div>
+              <div class="form-group" style="margin-top:var(--sp-4)">
+                <label class="form-label" for="s-phone">Phone <span style="color:var(--clr-text-3)">(optional)</span></label>
+                <input class="form-control" id="s-phone" name="phone"
+                       type="tel" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 2: Payment -->
+          <div id="step-2" class="checkout-section">
+            <h2><span class="section-icon">💳</span> Payment Method</h2>
+
+            <div class="payment-methods" id="payment-methods">
+              <label class="payment-card selected" data-method="card">
+                <input type="radio" name="payment" value="card" checked />
+                <span class="payment-card-label">Credit / Debit Card</span>
+                <span class="payment-card-icons">VISA MC AMEX</span>
+              </label>
+              <label class="payment-card" data-method="paypal">
+                <input type="radio" name="payment" value="paypal" />
+                <span class="payment-card-label">PayPal</span>
+                <span class="payment-card-icons">PayPal</span>
+              </label>
+              <label class="payment-card" data-method="apple">
+                <input type="radio" name="payment" value="apple">
+                <span class="payment-card-label">Apple Pay</span>
+                <span class="payment-card-icons"> Apple Pay</span>
+              </label>
+            </div>
+
+            <!-- Card fields (shown when "card" selected) -->
+            <div class="card-form visible" id="card-form">
+              <div class="form-group" style="margin-bottom:var(--sp-4)">
+                <label class="form-label" for="cc-name">Name on Card</label>
+                <input class="form-control" id="cc-name" type="text"
+                       placeholder="ALEX VOID" autocomplete="cc-name" />
+                <div class="form-error" id="err-cc-name"></div>
+              </div>
+              <div class="form-group" style="margin-bottom:var(--sp-4)">
+                <label class="form-label" for="cc-num">Card Number</label>
+                <div class="card-number-wrap">
+                  <input class="form-control" id="cc-num" type="text"
+                         placeholder="0000 0000 0000 0000" maxlength="19"
+                         autocomplete="cc-number" inputmode="numeric" />
+                  <span class="card-icon" id="card-brand-icon">💳</span>
+                </div>
+                <div class="form-error" id="err-cc-num"></div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="cc-exp">Expiry (MM/YY)</label>
+                  <input class="form-control" id="cc-exp" type="text"
+                         placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" />
+                  <div class="form-error" id="err-cc-exp"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cc-cvv">CVV</label>
+                  <input class="form-control" id="cc-cvv" type="text"
+                         placeholder="•••" maxlength="4"
+                         autocomplete="cc-csc" inputmode="numeric" />
+                  <div class="form-error" id="err-cc-cvv"></div>
+                </div>
+              </div>
+              <p class="form-hint" style="margin-top:var(--sp-3)">
+                🔒 This is a demo — no real card data is collected or processed.
+              </p>
+            </div>
+
+            <!-- PayPal / Apple Pay placeholders -->
+            <div id="paypal-form" style="display:none;margin-top:var(--sp-5);padding:var(--sp-6);background:var(--clr-bg-4);text-align:center;border:1px dashed var(--clr-border)">
+              <p style="color:var(--clr-text-3);font-size:var(--fs-sm)">
+                You'll be redirected to PayPal to complete payment.
+              </p>
+            </div>
+            <div id="apple-form" style="display:none;margin-top:var(--sp-5);padding:var(--sp-6);background:var(--clr-bg-4);text-align:center;border:1px dashed var(--clr-border)">
+              <p style="color:var(--clr-text-3);font-size:var(--fs-sm)">
+                Apple Pay will prompt on compatible devices.
+              </p>
+            </div>
+          </div>
+
+          <!-- Place order -->
+          <button class="btn btn-primary btn-xl btn-block place-order-btn"
+                  id="place-order-btn">
+            Place Order
+          </button>
+          <p style="font-size:var(--fs-xs);color:var(--clr-text-3);text-align:center;margin-top:var(--sp-3)">
+            By placing your order you agree to our Terms of Service and Privacy Policy.
+          </p>
+        </div>
+
+        <!-- Right: Order summary (sticky) -->
+        <div>
+          <div class="order-summary-box">
+            <h3>Order Summary</h3>
+            <div id="summary-items">
+              <div class="loading-overlay" style="padding:var(--sp-8)"><div class="spinner"></div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="summary-row"><span>Subtotal</span><span id="co-subtotal">—</span></div>
+            <div class="summary-row" id="co-discount-row" style="display:none">
+              <span>Discount</span><span id="co-discount" style="color:var(--clr-accent)">—</span>
+            </div>
+            <div class="summary-row"><span>Shipping</span><span id="co-shipping">—</span></div>
+            <div class="summary-row"><span>Tax</span><span id="co-tax">—</span></div>
+            <div class="summary-row total">
+              <span>Total</span><span class="amount" id="co-total">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/checkout.js"></script>
+</body>
+</html>

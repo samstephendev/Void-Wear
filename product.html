@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-12);
+      align-items: start;
+      padding: var(--sp-12) 0 var(--sp-20);
+    }
+
+    /* Gallery */
+    .gallery { display: flex; flex-direction: column; gap: var(--sp-3); position: sticky; top: calc(var(--header-h) + var(--sp-4)); }
+    .gallery__main {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: var(--clr-bg-3);
+      cursor: zoom-in;
+    }
+    .gallery__main img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform var(--transition-slow);
+    }
+    .gallery__main:hover img { transform: scale(1.04); }
+    .gallery__main .gallery-badges {
+      position: absolute; top: var(--sp-4); left: var(--sp-4);
+      display: flex; flex-direction: column; gap: var(--sp-2); z-index: 1;
+    }
+    .gallery__thumbs {
+      display: flex; gap: var(--sp-2);
+    }
+    .gallery__thumb {
+      width: 72px; height: 88px; overflow: hidden; background: var(--clr-bg-3);
+      cursor: pointer; border: 2px solid transparent;
+      transition: border-color var(--transition-fast);
+      flex-shrink: 0;
+    }
+    .gallery__thumb.active { border-color: var(--clr-accent); }
+    .gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Product info */
+    .product-info { display: flex; flex-direction: column; gap: var(--sp-5); }
+    .product-info__brand {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wider);
+      text-transform: uppercase; color: var(--clr-text-3);
+    }
+    .product-info__name {
+      font-size: clamp(var(--fs-2xl), 4vw, var(--fs-4xl));
+      line-height: var(--lh-tight); letter-spacing: var(--ls-tight);
+    }
+    .product-info__rating {
+      display: flex; align-items: center; gap: var(--sp-3);
+    }
+    .product-info__rating .review-link {
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      letter-spacing: var(--ls-wide); text-transform: uppercase;
+      cursor: pointer; transition: color var(--transition-fast);
+    }
+    .product-info__rating .review-link:hover { color: var(--clr-accent); }
+    .product-info__price {
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight); color: var(--clr-accent);
+    }
+    .product-info__price .original {
+      font-size: var(--fs-xl); color: var(--clr-text-3);
+      text-decoration: line-through; margin-left: var(--sp-3);
+    }
+    .product-info__stock {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wider);
+      text-transform: uppercase; padding: var(--sp-2) var(--sp-3);
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      border-radius: var(--radius-sm);
+    }
+    .product-info__stock.low { color: var(--clr-red); background: rgba(255,45,45,0.08); border: 1px solid rgba(255,45,45,0.2); }
+    .product-info__stock.ok  { color: var(--clr-accent); background: var(--clr-accent-glow); border: 1px solid rgba(184,245,58,0.2); }
+    .product-info__stock.out { color: var(--clr-text-3); background: var(--clr-bg-3); border: 1px solid var(--clr-border); }
+    .stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* Color selector */
+    .selector-label {
+      font-size: var(--fs-xs); font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-wider); text-transform: uppercase;
+      color: var(--clr-text-2); margin-bottom: var(--sp-3);
+      display: flex; justify-content: space-between;
+    }
+    .selector-label .selected-val { color: var(--clr-accent); }
+    .color-selector { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+    .color-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 3px solid transparent; outline: 2px solid transparent;
+      cursor: pointer; transition: all var(--transition-fast);
+      position: relative;
+    }
+    .color-btn:hover { outline-color: var(--clr-border-light); transform: scale(1.1); }
+    .color-btn.active { outline: 2px solid var(--clr-accent); outline-offset: 2px; border-color: var(--clr-bg); }
+
+    /* Size selector */
+    .size-selector { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+    .size-btn {
+      min-width: 48px; height: 44px; padding: 0 var(--sp-3);
+      background: var(--clr-bg-3); border: 1px solid var(--clr-border);
+      font-size: var(--fs-xs); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wide); text-transform: uppercase;
+      color: var(--clr-text-2); cursor: pointer;
+      transition: all var(--transition-fast); border-radius: var(--radius-sm);
+    }
+    .size-btn:hover { border-color: var(--clr-accent); color: var(--clr-accent); }
+    .size-btn.active { background: var(--clr-accent); border-color: var(--clr-accent); color: var(--clr-black); }
+    .size-btn.unavailable { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+    .size-guide-link {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wide); text-transform: uppercase;
+      color: var(--clr-text-3); text-decoration: underline; cursor: pointer;
+      transition: color var(--transition-fast);
+    }
+    .size-guide-link:hover { color: var(--clr-accent); }
+
+    /* Add to cart area */
+    .add-to-cart-area { display: flex; flex-direction: column; gap: var(--sp-3); }
+    .add-to-cart-row { display: flex; gap: var(--sp-3); align-items: center; }
+
+    /* Details accordion */
+    .details-accordion { border-top: 1px solid var(--clr-border); }
+    .accordion-item { border-bottom: 1px solid var(--clr-border); }
+    .accordion-trigger {
+      width: 100%; text-align: left; padding: var(--sp-4) 0;
+      font-size: var(--fs-xs); font-weight: var(--fw-black);
+      letter-spacing: var(--ls-wider); text-transform: uppercase;
+      color: var(--clr-text-2); cursor: pointer; background: none; border: none;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: color var(--transition-fast);
+    }
+    .accordion-trigger:hover { color: var(--clr-accent); }
+    .accordion-trigger .acc-icon { font-size: var(--fs-lg); line-height: 1; color: var(--clr-text-3); }
+    .accordion-body { padding-bottom: var(--sp-5); display: none; }
+    .accordion-body.open { display: block; }
+    .accordion-body ul { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .accordion-body li {
+      font-size: var(--fs-sm); color: var(--clr-text-2);
+      padding-left: var(--sp-4); position: relative;
+    }
+    .accordion-body li::before {
+      content: '◈'; position: absolute; left: 0;
+      color: var(--clr-accent); font-size: 10px;
+    }
+    .accordion-body p { font-size: var(--fs-sm); color: var(--clr-text-2); line-height: var(--lh-loose); }
+
+    /* Reviews */
+    .reviews-section { padding: var(--sp-16) 0; border-top: 1px solid var(--clr-border); }
+    .reviews-header {
+      display: grid; grid-template-columns: auto 1fr;
+      gap: var(--sp-12); align-items: center; margin-bottom: var(--sp-10);
+    }
+    .reviews-aggregate { text-align: center; }
+    .reviews-aggregate .big-score {
+      font-family: var(--font-display); font-size: var(--fs-6xl);
+      font-weight: var(--fw-black); letter-spacing: var(--ls-tight);
+      color: var(--clr-accent); line-height: 1;
+    }
+    .reviews-aggregate .score-label {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wider);
+      text-transform: uppercase; color: var(--clr-text-3); margin-top: var(--sp-2);
+    }
+    .reviews-list { display: flex; flex-direction: column; gap: var(--sp-6); }
+    .review-card {
+      padding: var(--sp-5); background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+    }
+    .review-card__header {
+      display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3);
+    }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--clr-bg-4); display: flex; align-items: center;
+      justify-content: center; font-size: var(--fs-xs); font-weight: var(--fw-black);
+      color: var(--clr-accent); flex-shrink: 0;
+    }
+    .review-author { font-size: var(--fs-sm); font-weight: var(--fw-bold); }
+    .review-date { font-size: var(--fs-xs); color: var(--clr-text-3); }
+    .review-body { font-size: var(--fs-sm); color: var(--clr-text-2); line-height: var(--lh-loose); }
+
+    /* Related products */
+    .related-section { padding: var(--sp-16) 0; }
+
+    /* Error state */
+    .product-error { padding: var(--sp-24) 0; text-align: center; }
+
+    @media (max-width: 900px) {
+      .product-layout { grid-template-columns: 1fr; gap: var(--sp-8); }
+      .gallery { position: static; }
+      .reviews-header { grid-template-columns: 1fr; gap: var(--sp-6); }
+    }
+    @media (max-width: 640px) {
+      .add-to-cart-row { flex-direction: column; }
+      .add-to-cart-row .btn { width: 100%; }
+      .add-to-cart-row .qty-picker { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <!-- Breadcrumb -->
+    <div style="border-bottom:1px solid var(--clr-border);background:var(--clr-bg-2)">
+      <div class="container">
+        <div class="breadcrumb" id="breadcrumb" style="padding:var(--sp-4) 0;display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-xs);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--clr-text-3);">
+          <a href="index.html" style="transition:color .15s ease">Home</a>
+          <span>/</span>
+          <a href="shop.html" style="transition:color .15s ease">Shop</a>
+          <span>/</span>
+          <span id="breadcrumb-name" style="color:var(--clr-text-2)">Loading…</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="container">
+      <div id="product-loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading product…</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="product-error" class="product-error hidden">
+        <div class="empty-icon">◈</div>
+        <h2 style="margin:var(--sp-4) 0">Product Not Found</h2>
+        <p style="color:var(--clr-text-3);margin-bottom:var(--sp-6)">This drop doesn't exist or has been removed.</p>
+        <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+      </div>
+
+      <!-- Product layout -->
+      <div id="product-content" class="product-layout hidden">
+
+        <!-- Left: Gallery -->
+        <div class="gallery" id="gallery">
+          <div class="gallery__main" id="gallery-main">
+            <div class="gallery-badges" id="gallery-badges"></div>
+            <img id="gallery-main-img" src="" alt="" />
+          </div>
+          <div class="gallery__thumbs" id="gallery-thumbs"></div>
+        </div>
+
+        <!-- Right: Info -->
+        <div class="product-info" id="product-info">
+          <div class="product-info__brand" id="info-brand"></div>
+          <h1 class="product-info__name" id="info-name"></h1>
+
+          <!-- Rating -->
+          <div class="product-info__rating">
+            <div class="star-rating" id="info-stars"></div>
+            <span id="info-rating-score" style="font-size:var(--fs-sm);font-weight:var(--fw-bold);color:var(--clr-accent)"></span>
+            <button class="review-link" id="review-scroll-btn"></button>
+          </div>
+
+          <!-- Price -->
+          <div>
+            <span class="product-info__price" id="info-price"></span>
+          </div>
+
+          <!-- Stock -->
+          <div id="info-stock"></div>
+
+          <div class="divider"></div>
+
+          <!-- Color -->
+          <div id="color-section">
+            <div class="selector-label">
+              Color <span class="selected-val" id="selected-color"></span>
+            </div>
+            <div class="color-selector" id="color-selector"></div>
+          </div>
+
+          <!-- Size -->
+          <div id="size-section">
+            <div class="selector-label">
+              Size
+              <span class="selected-val" id="selected-size"></span>
+              <button class="size-guide-link" onclick="alert('Size guide:\nXS=32" chest\nS=34"\nM=36"\nL=38"\nXL=40"\nXXL=42"')">Size Guide</button>
+            </div>
+            <div class="size-selector" id="size-selector"></div>
+            <div class="form-error" id="size-error" style="margin-top:var(--sp-2)"></div>
+          </div>
+
+          <!-- Quantity + Add to cart -->
+          <div class="add-to-cart-area">
+            <div class="add-to-cart-row">
+              <div class="qty-picker" id="qty-picker">
+                <button id="qty-dec" aria-label="Decrease quantity">−</button>
+                <input type="number" id="qty-input" value="1" min="1" max="99" readonly aria-label="Quantity" />
+                <button id="qty-inc" aria-label="Increase quantity">+</button>
+              </div>
+              <button class="btn btn-primary btn-lg" id="add-to-cart-btn" style="flex:1">
+                Add to Cart
+              </button>
+            </div>
+            <button class="btn btn-secondary btn-lg btn-block" id="buy-now-btn">
+              Buy Now
+            </button>
+            <button class="btn btn-ghost btn-block" id="wishlist-btn" data-wishlist-id="">
+              ♡ Add to Wishlist
+            </button>
+          </div>
+
+          <!-- Accordion -->
+          <div class="details-accordion" id="details-accordion">
+            <div class="accordion-item">
+              <button class="accordion-trigger" data-accordion="desc">
+                Description <span class="acc-icon">+</span>
+              </button>
+              <div class="accordion-body" id="acc-desc">
+                <p id="info-description"></p>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <button class="accordion-trigger" data-accordion="details">
+                Details &amp; Materials <span class="acc-icon">+</span>
+              </button>
+              <div class="accordion-body" id="acc-details">
+                <ul id="info-details"></ul>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <button class="accordion-trigger" data-accordion="shipping">
+                Shipping &amp; Returns <span class="acc-icon">+</span>
+              </button>
+              <div class="accordion-body" id="acc-shipping">
+                <p style="font-size:var(--fs-sm);color:var(--clr-text-2);line-height:var(--lh-loose)">
+                  Free standard shipping on orders over $100. Express available at checkout.
+                  Returns accepted within 30 days of delivery — unworn, tags attached.
+                  Final sale items and limited drops are non-returnable.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews section -->
+    <div class="reviews-section hidden" id="reviews-section">
+      <div class="container">
+        <div class="section-rule" style="margin-bottom:var(--sp-10)">
+          <h2>Reviews</h2>
+        </div>
+        <div class="reviews-header">
+          <div class="reviews-aggregate">
+            <div class="big-score" id="reviews-score">—</div>
+            <div class="star-rating" id="reviews-stars" style="justify-content:center;margin-top:var(--sp-2)"></div>
+            <div class="score-label" id="reviews-count-label"></div>
+          </div>
+          <div class="reviews-list" id="reviews-list">
+            <div class="loading-overlay"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related products -->
+    <div class="related-section hidden" id="related-section">
+      <div class="container">
+        <div class="section-rule" style="margin-bottom:var(--sp-8)">
+          <h2>You May Also <em style="color:var(--clr-accent);font-style:normal">Like</em></h2>
+        </div>
+        <div class="product-grid" id="related-grid"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/product.js"></script>
+</body>
+</html>

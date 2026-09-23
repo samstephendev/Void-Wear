@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: var(--sp-8);
+      align-items: start;
+      padding: var(--sp-10) 0 var(--sp-20);
+    }
+    .cart-item-row {
+      display: grid;
+      grid-template-columns: 88px 1fr auto auto;
+      gap: var(--sp-4);
+      align-items: center;
+      padding: var(--sp-5) 0;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .cart-item-row:first-child { border-top: 1px solid var(--clr-border); }
+    .cart-item-img {
+      width: 88px; height: 108px;
+      object-fit: cover; background: var(--clr-bg-3);
+      display: block;
+    }
+    .cart-item-name {
+      font-family: var(--font-display); font-size: var(--fs-base);
+      font-weight: var(--fw-black); letter-spacing: var(--ls-tight);
+      text-transform: uppercase; color: var(--clr-text);
+      text-decoration: none; transition: color var(--transition-fast);
+      display: block; margin-bottom: var(--sp-1);
+    }
+    .cart-item-name:hover { color: var(--clr-accent); }
+    .cart-item-meta {
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      letter-spacing: var(--ls-normal); margin-bottom: var(--sp-3);
+    }
+    .cart-item-price {
+      font-family: var(--font-display); font-size: var(--fs-lg);
+      font-weight: var(--fw-black); color: var(--clr-accent);
+      white-space: nowrap; text-align: right;
+    }
+    .cart-item-remove {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wider);
+      text-transform: uppercase; color: var(--clr-text-3);
+      background: none; border: none; cursor: pointer; display: block;
+      margin-top: var(--sp-2); transition: color var(--transition-fast);
+    }
+    .cart-item-remove:hover { color: var(--clr-red); }
+    .coupon-result {
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wide);
+      text-transform: uppercase; margin-top: var(--sp-2);
+      padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-sm);
+    }
+    .coupon-result.success { background: var(--clr-accent-glow); color: var(--clr-accent); border: 1px solid rgba(184,245,58,.25); }
+    .coupon-result.error   { background: rgba(255,45,45,.08);     color: var(--clr-red);    border: 1px solid rgba(255,45,45,.2); }
+    .shipping-note {
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      letter-spacing: var(--ls-normal); text-align: center;
+      margin: var(--sp-3) 0;
+    }
+    .shipping-note strong { color: var(--clr-accent); }
+    .trust-badges {
+      display: flex; flex-direction: column; gap: var(--sp-3);
+      margin-top: var(--sp-5); padding-top: var(--sp-5);
+      border-top: 1px solid var(--clr-border);
+    }
+    .trust-badge {
+      display: flex; align-items: center; gap: var(--sp-3);
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      letter-spacing: var(--ls-normal);
+    }
+    .trust-badge .icon { font-size: var(--fs-base); }
+    @media (max-width: 900px) {
+      .cart-layout { grid-template-columns: 1fr; }
+      .order-summary-box { position: static; }
+    }
+    @media (max-width: 560px) {
+      .cart-item-row { grid-template-columns: 72px 1fr; grid-template-rows: auto auto; }
+      .cart-item-row > :nth-child(3),
+      .cart-item-row > :nth-child(4) { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <div class="page-hero">
+      <div class="container">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a><span>/</span><span>Cart</span>
+        </div>
+        <h1 class="page-hero h1">Your Cart</h1>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Loading -->
+      <div id="cart-loading" class="loading-overlay">
+        <div class="spinner"></div><p>Loading cart…</p>
+      </div>
+
+      <!-- Empty state -->
+      <div id="cart-empty" class="empty-state hidden">
+        <div class="empty-icon">◻</div>
+        <h3>Your Cart is Empty</h3>
+        <p>Looks like you haven't added anything yet. Time to cop something.</p>
+        <a href="shop.html" class="btn btn-primary mt-4">Shop Now</a>
+      </div>
+
+      <!-- Cart layout -->
+      <div id="cart-content" class="cart-layout hidden">
+
+        <!-- Left: Items -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-5)">
+            <h2 style="font-size:var(--fs-sm);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--clr-text-3)">
+              Items (<span id="item-count">0</span>)
+            </h2>
+            <button class="btn btn-ghost btn-sm" id="clear-cart-btn"
+                    style="color:var(--clr-text-3);font-size:var(--fs-xs)">
+              Clear Cart
+            </button>
+          </div>
+
+          <div id="cart-items-list"></div>
+
+          <!-- Continue shopping -->
+          <div style="margin-top:var(--sp-6)">
+            <a href="shop.html" class="btn btn-secondary btn-sm">← Continue Shopping</a>
+          </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <div>
+          <div class="order-summary-box">
+            <h3>Order Summary</h3>
+
+            <!-- Coupon -->
+            <div class="coupon-form">
+              <input class="form-control" id="coupon-input" type="text"
+                     placeholder="Coupon code" aria-label="Coupon code"
+                     style="text-transform:uppercase;letter-spacing:var(--ls-wide)" />
+              <button class="btn btn-dark btn-sm" id="coupon-btn">Apply</button>
+            </div>
+            <div id="coupon-result"></div>
+
+            <div class="divider"></div>
+
+            <!-- Totals -->
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">$0.00</span>
+            </div>
+            <div class="summary-row" id="discount-row" style="display:none">
+              <span>Discount</span>
+              <span id="summary-discount" style="color:var(--clr-accent)">−$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span id="summary-shipping">$9.99</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax (8.75%)</span>
+              <span id="summary-tax">$0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span class="amount" id="summary-total">$0.00</span>
+            </div>
+
+            <p class="shipping-note" id="shipping-note"></p>
+
+            <a href="checkout.html" class="btn btn-primary btn-xl btn-block"
+               id="checkout-btn" style="margin-top:var(--sp-5)">
+              Proceed to Checkout
+            </a>
+
+            <!-- Trust badges -->
+            <div class="trust-badges">
+              <div class="trust-badge"><span class="icon">🔒</span> Secure checkout</div>
+              <div class="trust-badge"><span class="icon">↩</span> 30-day free returns</div>
+              <div class="trust-badge"><span class="icon">📦</span> Free shipping over $100</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/cart.js"></script>
+</body>
+</html>

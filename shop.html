@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Shop all VOIDWEAR drops — hoodies, tees, bottoms, accessories, footwear." />
+  <title>Shop — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .shop-hero {
+      padding: var(--sp-16) 0 var(--sp-10);
+      background: linear-gradient(180deg, var(--clr-bg-2) 0%, var(--clr-bg) 100%);
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .shop-hero h1 { font-size: clamp(var(--fs-4xl), 8vw, var(--fs-6xl)); }
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-4);
+      min-height: 28px;
+    }
+    .active-filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: 4px 10px;
+      background: var(--clr-accent-glow);
+      border: 1px solid var(--clr-accent);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-wide);
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      cursor: pointer;
+    }
+    .active-filter-tag:hover { background: var(--clr-accent); color: var(--clr-black); }
+    .clear-all-btn {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      align-self: center;
+      transition: color var(--transition-fast);
+    }
+    .clear-all-btn:hover { color: var(--clr-red); }
+    .mobile-filter-bar {
+      display: none;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-6);
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .mobile-filter-bar { display: flex; flex-wrap: wrap; }
+    }
+    .color-filter-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--clr-border);
+      cursor: pointer;
+      display: inline-block;
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+    }
+    .color-filter-dot:hover,
+    .color-filter-dot.active { transform: scale(1.25); border-color: var(--clr-accent); }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <!-- Page Hero -->
+    <div class="shop-hero">
+      <div class="container">
+        <div class="section-label" id="shop-label">All Products</div>
+        <h1 id="shop-title">Shop</h1>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-20)">
+
+      <!-- Mobile filter bar -->
+      <div class="mobile-filter-bar">
+        <button class="btn btn-dark btn-sm filter-toggle-btn" id="filter-toggle-btn">
+          ☰ Filters
+        </button>
+        <select class="sort-select" id="mobile-sort-select" aria-label="Sort products">
+          <option value="">Sort: Featured</option>
+          <option value="newest">Newest</option>
+          <option value="popularity">Most Popular</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+        <span id="mobile-results-count" class="results-count"></span>
+      </div>
+
+      <!-- Active filter tags -->
+      <div class="active-filters" id="active-filters"></div>
+
+      <div class="shop-layout">
+
+        <!-- ── SIDEBAR FILTERS ─────────────────────────── -->
+        <aside class="filters-sidebar" id="filters-sidebar" aria-label="Product filters">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-4)">
+            <span style="font-size:var(--fs-xs);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--clr-text-3);font-weight:700">Filters</span>
+            <button class="clear-all-btn" id="clear-all-btn">Clear All</button>
+          </div>
+
+          <!-- Category -->
+          <div class="filter-section">
+            <div class="filter-section-title" data-filter-toggle="category">
+              Category <span class="toggle-icon">−</span>
+            </div>
+            <div class="filter-section-body" id="filter-category">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Size -->
+          <div class="filter-section">
+            <div class="filter-section-title" data-filter-toggle="size">
+              Size <span class="toggle-icon">−</span>
+            </div>
+            <div class="filter-section-body" id="filter-size">
+              <div class="filter-options" id="size-options">
+                <!-- populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Color -->
+          <div class="filter-section">
+            <div class="filter-section-title" data-filter-toggle="color">
+              Color <span class="toggle-icon">−</span>
+            </div>
+            <div class="filter-section-body" id="filter-color">
+              <div class="filter-options" id="color-options" style="gap:var(--sp-3)">
+                <!-- populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="filter-section">
+            <div class="filter-section-title" data-filter-toggle="price">
+              Price <span class="toggle-icon">−</span>
+            </div>
+            <div class="filter-section-body" id="filter-price">
+              <div class="price-range-display">
+                <span>$0</span>
+                <span id="price-max-label">$350</span>
+              </div>
+              <input type="range" id="price-range" min="0" max="350" value="350"
+                     step="5" aria-label="Maximum price" />
+            </div>
+          </div>
+
+          <!-- Availability -->
+          <div class="filter-section">
+            <div class="filter-section-title" data-filter-toggle="avail">
+              Availability <span class="toggle-icon">−</span>
+            </div>
+            <div class="filter-section-body" id="filter-avail">
+              <label class="form-check">
+                <input type="checkbox" id="in-stock-only" />
+                <label for="in-stock-only">In Stock Only</label>
+              </label>
+              <label class="form-check" style="margin-top:var(--sp-3)">
+                <input type="checkbox" id="new-only" />
+                <label for="new-only">New Drops Only</label>
+              </label>
+            </div>
+          </div>
+
+          <!-- Mobile close -->
+          <button class="btn btn-primary btn-block" id="apply-filters-btn"
+                  style="display:none;margin-top:var(--sp-6)">
+            Apply Filters
+          </button>
+        </aside>
+
+        <!-- ── PRODUCT GRID ────────────────────────────── -->
+        <div>
+          <!-- Sort bar (desktop) -->
+          <div class="sort-bar">
+            <span class="results-count" id="results-count"></span>
+            <div class="sort-controls">
+              <label for="sort-select">Sort:</label>
+              <select class="sort-select" id="sort-select" aria-label="Sort products">
+                <option value="">Featured</option>
+                <option value="newest">Newest</option>
+                <option value="popularity">Most Popular</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="rating">Top Rated</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="product-grid" id="product-grid">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/shop.js"></script>
+</body>
+</html>

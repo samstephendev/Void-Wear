@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .auth-wrap {
+      min-height: calc(100svh - var(--header-h));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-12) var(--gutter);
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(184,245,58,.05) 0%, transparent 60%),
+        var(--clr-bg);
+    }
+    .auth-card { width: 100%; max-width: 480px; }
+    .auth-logo {
+      display: block;
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl);
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: var(--sp-8);
+    }
+    .auth-logo span { color: var(--clr-accent); }
+    .auth-box { background: var(--clr-surface); border: 1px solid var(--clr-border); padding: var(--sp-8); }
+    .auth-box h1 { font-size: var(--fs-2xl); letter-spacing: var(--ls-tight); margin-bottom: var(--sp-2); }
+    .auth-box .auth-sub { font-size: var(--fs-sm); color: var(--clr-text-3); margin-bottom: var(--sp-8); }
+    .auth-form { display: flex; flex-direction: column; gap: var(--sp-5); }
+    .auth-global-error {
+      background: rgba(255,45,45,.08);
+      border: 1px solid rgba(255,45,45,.25);
+      color: var(--clr-red);
+      padding: var(--sp-3) var(--sp-4);
+      font-size: var(--fs-sm);
+      display: none;
+    }
+    .auth-global-error.visible { display: block; }
+    .auth-footer { text-align: center; margin-top: var(--sp-6); font-size: var(--fs-sm); color: var(--clr-text-3); }
+    .auth-footer a { color: var(--clr-accent); font-weight: var(--fw-bold); transition: opacity var(--transition-fast); }
+    .auth-footer a:hover { opacity: .8; }
+    .password-wrap { position: relative; }
+    .toggle-pw {
+      position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%);
+      font-size: var(--fs-xs); letter-spacing: var(--ls-wide); text-transform: uppercase;
+      color: var(--clr-text-3); cursor: pointer; user-select: none; transition: color var(--transition-fast);
+    }
+    .toggle-pw:hover { color: var(--clr-accent); }
+    .password-strength {
+      height: 3px; background: var(--clr-border); border-radius: 2px;
+      margin-top: var(--sp-2); overflow: hidden;
+    }
+    .password-strength-bar {
+      height: 100%; width: 0; border-radius: 2px;
+      transition: width .3s ease, background .3s ease;
+    }
+    .strength-label {
+      font-size: var(--fs-xs); color: var(--clr-text-3);
+      margin-top: var(--sp-1); letter-spacing: var(--ls-normal);
+    }
+    .terms-note { font-size: var(--fs-xs); color: var(--clr-text-3); line-height: var(--lh-loose); }
+    .terms-note a { color: var(--clr-accent); }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main" style="padding-top:0">
+    <div class="auth-wrap">
+      <div class="auth-card">
+
+        <a href="index.html" class="auth-logo">VOID<span>WEAR</span></a>
+
+        <div class="auth-box">
+          <h1>Create Account</h1>
+          <p class="auth-sub">Join the underground. Free to sign up.</p>
+
+          <div class="auth-global-error" id="global-error" role="alert"></div>
+
+          <form class="auth-form" id="signup-form" novalidate>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="first-name">First Name</label>
+                <input class="form-control" id="first-name" name="firstName"
+                       type="text" placeholder="Alex" autocomplete="given-name" />
+                <div class="form-error" id="err-first-name"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="last-name">Last Name</label>
+                <input class="form-control" id="last-name" name="lastName"
+                       type="text" placeholder="Void" autocomplete="family-name" />
+                <div class="form-error" id="err-last-name"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input class="form-control" id="email" name="email"
+                     type="email" placeholder="you@email.com"
+                     autocomplete="email" inputmode="email" />
+              <div class="form-error" id="err-email"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <div class="password-wrap">
+                <input class="form-control" id="password" name="password"
+                       type="password" placeholder="Min. 8 characters"
+                       autocomplete="new-password" style="padding-right:3.5rem" />
+                <span class="toggle-pw" id="toggle-pw" role="button"
+                      tabindex="0" aria-label="Toggle password visibility">Show</span>
+              </div>
+              <div class="password-strength">
+                <div class="password-strength-bar" id="strength-bar"></div>
+              </div>
+              <div class="strength-label" id="strength-label"></div>
+              <div class="form-error" id="err-password"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="confirm-password">Confirm Password</label>
+              <input class="form-control" id="confirm-password" name="confirmPassword"
+                     type="password" placeholder="Re-enter password"
+                     autocomplete="new-password" />
+              <div class="form-error" id="err-confirm-password"></div>
+            </div>
+
+            <p class="terms-note">
+              By creating an account you agree to our
+              <a href="#">Terms of Service</a> and
+              <a href="#">Privacy Policy</a>.
+            </p>
+
+            <button type="submit" class="btn btn-primary btn-xl btn-block"
+                    id="signup-btn">
+              Create Account
+            </button>
+
+          </form>
+        </div>
+
+        <div class="auth-footer">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/signup.js"></script>
+</body>
+</html>

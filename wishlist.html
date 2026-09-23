@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wishlist — VOIDWEAR</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .wishlist-layout {
+      padding: var(--sp-10) 0 var(--sp-24);
+    }
+    .wishlist-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--sp-4);
+      margin-bottom: var(--sp-8);
+    }
+    .wishlist-count {
+      font-size: var(--fs-sm);
+      color: var(--clr-text-3);
+      letter-spacing: var(--ls-wide);
+    }
+    .wishlist-count strong { color: var(--clr-accent); }
+
+    /* Wishlist item row (list view) */
+    .wishlist-item {
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      gap: var(--sp-4);
+      align-items: center;
+      padding: var(--sp-5) 0;
+      border-bottom: 1px solid var(--clr-border);
+      transition: background var(--transition-fast);
+    }
+    .wishlist-item:first-child { border-top: 1px solid var(--clr-border); }
+    .wishlist-item img {
+      width: 88px; height: 108px;
+      object-fit: cover;
+      background: var(--clr-bg-3);
+      display: block;
+      flex-shrink: 0;
+    }
+    .wishlist-item-name {
+      font-family: var(--font-display);
+      font-size: var(--fs-base);
+      font-weight: var(--fw-black);
+      letter-spacing: var(--ls-tight);
+      text-transform: uppercase;
+      color: var(--clr-text);
+      text-decoration: none;
+      display: block;
+      margin-bottom: var(--sp-1);
+      transition: color var(--transition-fast);
+    }
+    .wishlist-item-name:hover { color: var(--clr-accent); }
+    .wishlist-item-meta {
+      font-size: var(--fs-xs);
+      color: var(--clr-text-3);
+      letter-spacing: var(--ls-normal);
+      text-transform: capitalize;
+      margin-bottom: var(--sp-3);
+    }
+    .wishlist-item-price {
+      font-family: var(--font-display);
+      font-size: var(--fs-lg);
+      font-weight: var(--fw-black);
+      color: var(--clr-accent);
+      margin-bottom: var(--sp-3);
+    }
+    .wishlist-item-actions {
+      display: flex;
+      gap: var(--sp-3);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .wishlist-remove-btn {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wider);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      background: none; border: none; cursor: pointer;
+      padding: 0; transition: color var(--transition-fast);
+    }
+    .wishlist-remove-btn:hover { color: var(--clr-red); }
+
+    /* Stock badge on wishlist */
+    .wl-stock-out {
+      font-size: var(--fs-xs);
+      letter-spacing: var(--ls-wide);
+      text-transform: uppercase;
+      color: var(--clr-text-3);
+      padding: 3px 8px;
+      background: var(--clr-bg-4);
+      border: 1px solid var(--clr-border);
+    }
+
+    /* Right-side item controls */
+    .wishlist-item-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+    .wishlist-item-added {
+      font-size: var(--fs-xs);
+      color: var(--clr-text-3);
+      white-space: nowrap;
+    }
+
+    /* Move-all bar */
+    .wishlist-actions-bar {
+      display: flex;
+      gap: var(--sp-4);
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: var(--sp-8);
+      padding-top: var(--sp-6);
+      border-top: 1px solid var(--clr-border);
+    }
+
+    @media (max-width: 640px) {
+      .wishlist-item {
+        grid-template-columns: 72px 1fr;
+        grid-template-rows: auto auto;
+      }
+      .wishlist-item-right {
+        grid-column: 2;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <main class="page-main">
+    <div class="page-hero">
+      <div class="container">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a><span>/</span><span>Wishlist</span>
+        </div>
+        <h1>Wishlist</h1>
+      </div>
+    </div>
+
+    <div class="container wishlist-layout">
+
+      <!-- Loading -->
+      <div id="wl-loading" class="loading-overlay" style="padding:var(--sp-12)">
+        <div class="spinner"></div>
+        <p>Loading wishlist…</p>
+      </div>
+
+      <!-- Empty -->
+      <div id="wl-empty" class="empty-state hidden">
+        <div class="empty-icon">♡</div>
+        <h3>Your Wishlist is Empty</h3>
+        <p>Tap the heart on any product to save it here for later.</p>
+        <a href="shop.html" class="btn btn-primary mt-4">Browse Drops</a>
+      </div>
+
+      <!-- Content -->
+      <div id="wl-content" class="hidden">
+
+        <div class="wishlist-header-row">
+          <p class="wishlist-count">
+            <strong id="wl-count">0</strong> saved items
+          </p>
+          <button class="btn btn-ghost btn-sm" id="clear-wishlist-btn"
+                  style="color:var(--clr-text-3);font-size:var(--fs-xs)">
+            Clear All
+          </button>
+        </div>
+
+        <!-- Items list -->
+        <div id="wl-items"></div>
+
+        <!-- Bottom actions -->
+        <div class="wishlist-actions-bar">
+          <button class="btn btn-primary" id="move-all-to-cart-btn">
+            Move All to Cart
+          </button>
+          <a href="shop.html" class="btn btn-secondary">Continue Shopping</a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  <script type="module" src="js/pages/wishlist.js"></script>
+</body>
+</html>
