@@ -50,9 +50,9 @@ export function renderProductCard(product, opts = {}) {
     : '';
 
   const priceHTML = product.originalPrice
-    ? `<span class="product-card__price">$${product.price}</span>
-       <span class="product-card__price-original">$${product.originalPrice}</span>`
-    : `<span class="product-card__price">${isSoldOut ? '<span style="color:var(--clr-text-3)">$' + product.price + '</span>' : '$' + product.price}</span>`;
+    ? `<span class="product-card__price">₹${product.price}</span>
+       <span class="product-card__price-original">₹${product.originalPrice}</span>`
+    : `<span class="product-card__price">${isSoldOut ? '<span style="color:var(--clr-text-3)">₹' + product.price + '</span>' : '₹' + product.price}</span>`;
 
   const quickAdd = showQuickAdd && !isSoldOut
     ? `<button class="product-card__quick-add" data-product-id="${product.id}">+ Add</button>`

@@ -81,7 +81,7 @@ function renderItems() {
             ${item.name}
           </a>
           <div class="wishlist-item-meta">${item.category}</div>
-          <div class="wishlist-item-price">$${item.price}</div>
+          <div class="wishlist-item-price">₹${item.price}</div>
           <div class="wishlist-item-actions">
             ${addBtn}
             <button class="wishlist-remove-btn"

@@ -69,22 +69,22 @@ function renderSummary() {
           <div class="summary-item-name">${item.name}</div>
           <div class="summary-item-meta">${item.color} / ${item.size} × ${item.quantity}</div>
         </div>
-        <div class="summary-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        <div class="summary-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
       </div>`).join('');
   }
 
   const t = calculateTotals(cartItems, activeCoupon);
-  setText('co-subtotal', `$${t.subtotal.toFixed(2)}`);
+  setText('co-subtotal', `₹${t.subtotal.toFixed(2)}`);
   setText('co-shipping', t.shipping === 0
     ? '<span style="color:var(--clr-accent)">Free</span>'
-    : `$${t.shipping.toFixed(2)}`);
-  setText('co-tax',   `$${t.tax.toFixed(2)}`);
-  setText('co-total', `$${t.total.toFixed(2)}`);
+    : `₹${t.shipping.toFixed(2)}`);
+  setText('co-tax',   `₹${t.tax.toFixed(2)}`);
+  setText('co-total', `₹${t.total.toFixed(2)}`);
 
   const discRow = document.getElementById('co-discount-row');
   if (discRow) {
     discRow.style.display = t.discount > 0 ? 'flex' : 'none';
-    setText('co-discount', `−$${t.discount.toFixed(2)}`);
+    setText('co-discount', `−₹${t.discount.toFixed(2)}`);
   }
 }
 
@@ -229,7 +229,7 @@ document.getElementById('place-order-btn')?.addEventListener('click', async () =
       city:      getValue('s-city'),
       state:     getValue('s-state'),
       zip:       getValue('s-zip'),
-      country:   document.getElementById('s-country')?.value ?? 'US',
+      country:   document.getElementById('s-country')?.value ?? 'IN',
     };
 
     const order = await placeOrder({

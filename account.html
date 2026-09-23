@@ -267,19 +267,21 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="af-state">State</label>
-              <input class="form-control" id="af-state" type="text" maxlength="2" autocomplete="address-level1" />
+              <input class="form-control" id="af-state" type="text" autocomplete="address-level1" placeholder="Tamil Nadu" />
               <div class="form-error" id="err-af-state"></div>
             </div>
           </div>
           <div class="form-grid" style="margin-bottom:var(--sp-6)">
             <div class="form-group">
-              <label class="form-label" for="af-zip">ZIP</label>
-              <input class="form-control" id="af-zip" type="text" maxlength="10" autocomplete="postal-code" />
+              <label class="form-label" for="af-zip">PIN Code</label>
+              <input class="form-control" id="af-zip" type="text" maxlength="6"
+                     placeholder="600001" autocomplete="postal-code" inputmode="numeric" />
               <div class="form-error" id="err-af-zip"></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="af-country">Country</label>
               <select class="form-control" id="af-country" autocomplete="country">
+                <option value="IN" selected>India</option>
                 <option value="US">United States</option>
                 <option value="CA">Canada</option>
                 <option value="GB">United Kingdom</option>

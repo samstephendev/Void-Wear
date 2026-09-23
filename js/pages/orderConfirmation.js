@@ -50,7 +50,7 @@ function renderOrder(order) {
           <div class="confirm-item-name">${item.name}</div>
           <div class="confirm-item-meta">${item.color} / ${item.size} × ${item.quantity}</div>
         </div>
-        <div class="confirm-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        <div class="confirm-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
       </div>`).join('');
   }
 
@@ -72,17 +72,17 @@ function renderOrder(order) {
   const totalsEl = document.getElementById('conf-totals');
   if (totalsEl) {
     const rows = [
-      ['Subtotal',  `$${order.subtotal.toFixed(2)}`],
-      order.discount > 0 ? ['Discount', `<span style="color:var(--clr-accent)">−$${order.discount.toFixed(2)}</span>`] : null,
-      ['Shipping',  order.shipping === 0 ? '<span style="color:var(--clr-accent)">Free</span>' : `$${order.shipping.toFixed(2)}`],
-      ['Tax',       `$${order.tax.toFixed(2)}`],
+      ['Subtotal',  `₹${order.subtotal.toFixed(2)}`],
+      order.discount > 0 ? ['Discount', `<span style="color:var(--clr-accent)">−₹${order.discount.toFixed(2)}</span>`] : null,
+      ['Shipping',  order.shipping === 0 ? '<span style="color:var(--clr-accent)">Free</span>' : `₹${order.shipping.toFixed(2)}`],
+      ['Tax',       `₹${order.tax.toFixed(2)}`],
     ].filter(Boolean);
 
     totalsEl.innerHTML = rows.map(([l, v]) => `
       <tr><td>${l}</td><td>${v}</td></tr>`).join('') + `
       <tr class="grand-total">
         <td>Total</td>
-        <td>$${order.total.toFixed(2)}</td>
+        <td>₹${order.total.toFixed(2)}</td>
       </tr>`;
   }
 }

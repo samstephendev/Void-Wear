@@ -550,6 +550,170 @@ export const PRODUCTS = [
     createdAt: '2026-08-20T00:00:00Z',
     popularity: 620,
   },
+  /* ── DEMO / EDGE-CASE PRODUCTS (added for dev flow testing) ─ */
+
+  /**
+   * Edge case 1 — stock: 0 (sold-out)
+   * Tests: disabled Add-to-Cart button, sold-out badge on cards,
+   *        wishlist "sold out" indicator.
+   */
+  {
+    id: 'blackout-moto-jacket',
+    name: 'BLACKOUT MOTO JACKET',
+    brand: 'VOIDWEAR',
+    category: 'hoodies',
+    price: 295,
+    originalPrice: null,
+    images: [
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80',
+      'https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=600&q=80',
+    ],
+    colors: [
+      { name: 'Black', hex: '#0a0a0a' },
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    tags: ['jacket', 'moto', 'leather-look', 'sold-out'],
+    badge: 'sold-out',
+    stock: 0,
+    rating: 4.9,
+    reviewCount: 317,
+    description: 'Waxed-canvas moto silhouette with asymmetric zip, quilted lining, and YKK hardware throughout. The most-requested VOIDWEAR piece — and the hardest to restock. Currently sold out. Join the waitlist.',
+    details: [
+      '12oz waxed canvas outer shell',
+      'Asymmetric YKK zip closure',
+      'Quilted satin lining',
+      'Two zip chest pockets, two zip hip pockets',
+      'Snap-down collar',
+      'Metal VOID hardware throughout',
+    ],
+    isNew: false,
+    isFeatured: true,
+    createdAt: '2026-04-01T00:00:00Z',
+    popularity: 1150,
+  },
+
+  /**
+   * Edge case 2 — stock: 2 (low-stock warning)
+   * Tests: low-stock warning UI ("Only 2 left!") on product detail
+   *        and any card-level stock indicators.
+   */
+  {
+    id: 'signal-knit-vest',
+    name: 'SIGNAL KNIT VEST',
+    brand: 'VOIDWEAR',
+    category: 'tees',
+    price: 88,
+    originalPrice: null,
+    images: [
+      'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80',
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80',
+    ],
+    colors: [
+      { name: 'Off-White', hex: '#e8e2d9' },
+      { name: 'Black',     hex: '#0a0a0a' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    tags: ['vest', 'knit', 'layering', 'signal'],
+    badge: 'limited',
+    stock: 2,
+    rating: 4.7,
+    reviewCount: 61,
+    description: 'Open-knit mesh vest in a boxy, cropped silhouette. Signal logo intarsia-knit on the back yoke. Two left. Seriously.',
+    details: [
+      'Open-knit 100% cotton mesh',
+      'Boxy cropped fit',
+      'Intarsia-knit logo on back yoke',
+      'Ribbed armhole and neck binding',
+      'Last 2 units — no restock planned',
+    ],
+    isNew: true,
+    isFeatured: false,
+    createdAt: '2026-09-18T00:00:00Z',
+    popularity: 540,
+  },
+
+  /**
+   * Edge case 3 — originalPrice set (sale / strikethrough UI)
+   * Tests: sale badge rendering, strikethrough original price,
+   *        discount amount display on product detail + cart.
+   */
+  {
+    id: 'void-nylon-track',
+    name: 'NYLON TRACK JACKET',
+    brand: 'VOIDWEAR',
+    category: 'hoodies',
+    price: 89,
+    originalPrice: 155,
+    images: [
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80',
+      'https://images.unsplash.com/photo-1613915617203-c9a98f60b305?w=600&q=80',
+    ],
+    colors: [
+      { name: 'Black',        hex: '#0a0a0a' },
+      { name: 'Racing Green', hex: '#1a3a2a' },
+      { name: 'Cobalt',       hex: '#1a2a6a' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    tags: ['jacket', 'track', 'nylon', 'sale', 'sport'],
+    badge: 'sale',
+    stock: 19,
+    rating: 4.4,
+    reviewCount: 143,
+    description: 'Lightweight nylon track jacket — taffeta shell, mesh lining, contrast zip taping. Was $155. Now $89. No reason beyond making room for the next season.',
+    details: [
+      'Lightweight ripstop nylon taffeta outer',
+      'Full mesh lining',
+      'Contrast YKK zip with branded pull',
+      'Two side-seam zip pockets',
+      'Elastic cuffs and hem',
+      'Embroidered VOID mark on left chest',
+    ],
+    isNew: false,
+    isFeatured: false,
+    createdAt: '2026-05-20T00:00:00Z',
+    popularity: 390,
+  },
+
+  /**
+   * Edge case 4 — badge: 'limited', single color, single size option
+   * Tests: minimal-options UI on product detail (no color grid,
+   *        single size chip selected automatically), limited badge rendering.
+   */
+  {
+    id: 'numbered-camp-cap',
+    name: 'NUMBERED CAMP CAP — 001',
+    brand: 'VOIDWEAR',
+    category: 'accessories',
+    price: 68,
+    originalPrice: null,
+    images: [
+      'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=600&q=80',
+      'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=600&q=80',
+    ],
+    colors: [
+      { name: 'Washed Black', hex: '#1a1a1a' },
+    ],
+    sizes: ['ONE SIZE'],
+    tags: ['cap', 'hat', 'numbered', 'limited', 'camp-cap'],
+    badge: 'limited',
+    stock: 12,
+    rating: 5.0,
+    reviewCount: 29,
+    description: 'Hand-stamped numbered camp cap. Unstructured 5-panel, enzyme-washed cotton twill, tonal embroidery. Run of 50 — each cap stamped inside the sweatband. No. 001.',
+    details: [
+      'Unstructured 5-panel camp cap',
+      'Enzyme-washed cotton twill',
+      'Tonal chain-stitch embroidery on front',
+      'Individual number stamp on sweatband',
+      'One size — adjustable self-fabric strap',
+      'Run of 50 pieces, never restocked',
+    ],
+    isNew: true,
+    isFeatured: false,
+    createdAt: '2026-09-20T00:00:00Z',
+    popularity: 460,
+  },
+
   {
     id: 'slide-foam',
     name: 'FOAM SLIDE',

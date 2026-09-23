@@ -9,8 +9,7 @@ import { renderProductGrid, renderSkeletons } from '../components/productCard.js
 import { wireWishlistButtons } from '../components/wishlistWire.js';
 import { getFeaturedProducts, getNewDrops, getCategories, getFeaturedDrop } from '../services/productService.js';
 import { getCurrentUserSync } from '../services/authService.js';
-import { getCartCountSync } from '../services/cartService.js';
-import { getItem, setItem, KEYS } from '../utils/storage.js';
+import { runDevSeed } from '../utils/devSeed.js';
 
 // ── Category images ───────────────────────────────────────────
 const CAT_IMAGES = {
@@ -29,15 +28,6 @@ const CAT_COUNTS = {
 initHeader();
 initFooter();
 
-// ── Hide "Login / Sign Up" hero button if already logged in ──
-const heroLoginBtn = document.getElementById('hero-login-btn');
-if (heroLoginBtn && getCurrentUserSync()) {
-  heroLoginBtn.style.display = 'none';
-}
-
-// ── Seed demo cart on first visit so cart/checkout are testable
-seedDemoCart();
-
 // Animate hero BG
 const heroBg = document.getElementById('hero-bg');
 if (heroBg) setTimeout(() => heroBg.classList.add('loaded'), 100);
@@ -45,7 +35,23 @@ if (heroBg) setTimeout(() => heroBg.classList.add('loaded'), 100);
 // Build ticker
 buildTicker();
 
-// Load all sections in parallel
+// ── Dev seed + page boot ──────────────────────────────────────
+// runDevSeed() is a no-op when DEV_SEED = false, so this branch
+// is safe to leave in production. We await it so that the
+// auto-login (which has a fake network delay) is settled before
+// we hide the hero login button and refresh the header badges.
+runDevSeed().then(() => {
+  // Hide "Login / Sign Up" hero button if user is now logged in
+  const heroLoginBtn = document.getElementById('hero-login-btn');
+  if (heroLoginBtn && getCurrentUserSync()) {
+    heroLoginBtn.style.display = 'none';
+  }
+
+  // Re-render header badges to reflect seeded cart + wishlist counts
+  import('../components/header.js').then(({ updateHeaderBadges }) => updateHeaderBadges());
+});
+
+// Load all sections in parallel (don't block on seed)
 Promise.all([
   loadCategories(),
   loadFeaturedProducts(),
@@ -167,62 +173,3 @@ function startCountdown(targetMs) {
   tick();
 }
 
-// ── Demo cart seeder ──────────────────────────────────────────
-/**
- * Pre-populates the cart with 3 real demo items the first time
- * the homepage loads, so cart.html and checkout.html are
- * immediately testable without manually adding products first.
- *
- * Only seeds once — if the cart already has items, or the
- * "demo_cart_seeded" flag is set, it does nothing.
- */
-function seedDemoCart() {
-  // Don't re-seed if cart already has items or was already seeded
-  if (getCartCountSync() > 0) return;
-  if (getItem('demo_cart_seeded')) return;
-
-  const demoItems = [
-    {
-      cartItemId: 'void-logo-tee__Black__L',
-      productId:  'void-logo-tee',
-      name:       'VOID LOGO HEAVYWEIGHT TEE',
-      brand:      'VOIDWEAR',
-      image:      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80',
-      color:      'Black',
-      size:       'L',
-      price:      55,
-      quantity:   2,
-      stock:      80,
-    },
-    {
-      cartItemId: 'blk-arch-hoodie__Black__M',
-      productId:  'blk-arch-hoodie',
-      name:       'ARCH LOGO HOODIE',
-      brand:      'VOIDWEAR',
-      image:      'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=200&q=80',
-      color:      'Black',
-      size:       'M',
-      price:      119,
-      quantity:   1,
-      stock:      14,
-    },
-    {
-      cartItemId: 'void-beanie__Neon__ONE SIZE',
-      productId:  'void-beanie',
-      name:       'VOID RIBBED BEANIE',
-      brand:      'VOIDWEAR',
-      image:      'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=200&q=80',
-      color:      'Neon',
-      size:       'ONE SIZE',
-      price:      38,
-      quantity:   1,
-      stock:      62,
-    },
-  ];
-
-  setItem(KEYS.CART, demoItems);
-  setItem('demo_cart_seeded', true);
-
-  // Refresh header badges to show the cart count immediately
-  import('../components/header.js').then(({ updateHeaderBadges }) => updateHeaderBadges());
-}

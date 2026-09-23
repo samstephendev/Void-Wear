@@ -152,9 +152,13 @@ export function calculateTotals(cartItems = null, coupon = null) {
   const items = cartItems ?? readCart();
   const subtotal = items.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
 
-  const FREE_SHIPPING_THRESHOLD = 100;
-  const SHIPPING_RATE = 9.99;
-  const TAX_RATE = 0.0875; // 8.75%
+  // ── India localisation — adjust these three constants if needed ──
+  // Free shipping threshold : ₹2,000  (reasonable for branded streetwear)
+  // Flat shipping rate      : ₹199    (standard domestic courier)
+  // Tax rate                : 18%     (GST — standard rate for apparel/footwear)
+  const FREE_SHIPPING_THRESHOLD = 2000;
+  const SHIPPING_RATE = 199;
+  const TAX_RATE = 0.18; // 18% GST
 
   let shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_RATE;
   let discount = 0;

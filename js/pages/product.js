@@ -83,8 +83,8 @@ function renderProduct(p) {
   const priceEl = document.getElementById('info-price');
   if (priceEl) {
     priceEl.innerHTML = p.originalPrice
-      ? `$${p.price}<span class="original">$${p.originalPrice}</span>`
-      : `$${p.price}`;
+      ? `₹${p.price}<span class="original">₹${p.originalPrice}</span>`
+      : `₹${p.price}`;
   }
 
   // Stock indicator

@@ -70,9 +70,9 @@ function renderItems() {
       <div></div><!-- spacer col -->
 
       <div style="text-align:right">
-        <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        <div class="cart-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
         <div style="font-size:var(--fs-xs);color:var(--clr-text-3);margin-top:2px">
-          $${item.price} each
+          ₹${item.price} each
         </div>
       </div>
     </div>`).join('');
@@ -169,7 +169,7 @@ async function applyCoupon() {
       const desc = response.coupon.type === 'percent'
         ? `${response.coupon.value}% off applied`
         : response.coupon.type === 'fixed'
-          ? `$${response.coupon.value} off applied`
+          ? `₹${response.coupon.value} off applied`
           : 'Free shipping applied';
       result.textContent = `✓ ${code.toUpperCase()} — ${desc}`;
     } else {
@@ -185,16 +185,16 @@ async function applyCoupon() {
 function renderTotals() {
   const totals = calculateTotals(cartItems, activeCoupon);
 
-  setText('summary-subtotal', `$${totals.subtotal.toFixed(2)}`);
+  setText('summary-subtotal', `₹${totals.subtotal.toFixed(2)}`);
   setText('summary-shipping',
-    totals.shipping === 0 ? '<span style="color:var(--clr-accent)">Free</span>' : `$${totals.shipping.toFixed(2)}`);
-  setText('summary-tax',   `$${totals.tax.toFixed(2)}`);
-  setText('summary-total', `$${totals.total.toFixed(2)}`);
+    totals.shipping === 0 ? '<span style="color:var(--clr-accent)">Free</span>' : `₹${totals.shipping.toFixed(2)}`);
+  setText('summary-tax',   `₹${totals.tax.toFixed(2)}`);
+  setText('summary-total', `₹${totals.total.toFixed(2)}`);
 
   const discountRow = document.getElementById('discount-row');
   if (discountRow) {
     discountRow.style.display = totals.discount > 0 ? 'flex' : 'none';
-    setText('summary-discount', `−$${totals.discount.toFixed(2)}`);
+    setText('summary-discount', `−₹${totals.discount.toFixed(2)}`);
   }
 
   const shippingNote = document.getElementById('shipping-note');
@@ -202,8 +202,8 @@ function renderTotals() {
     if (totals.shipping === 0) {
       shippingNote.innerHTML = `<strong>✓ You qualify for free shipping!</strong>`;
     } else {
-      const needed = (100 - totals.subtotal).toFixed(2);
-      shippingNote.innerHTML = `Add <strong>$${needed}</strong> more for free shipping.`;
+      const needed = (2000 - totals.subtotal).toFixed(2);
+      shippingNote.innerHTML = `Add <strong>₹${needed}</strong> more for free shipping.`;
     }
   }
 

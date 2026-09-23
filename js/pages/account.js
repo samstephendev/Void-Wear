@@ -113,7 +113,7 @@ async function loadOrders() {
         <div class="order-card-footer">
           <div>
             <div class="order-total-label">${order.items.reduce((s,i) => s+i.quantity,0)} items</div>
-            <div class="order-total-val">$${order.total.toFixed(2)}</div>
+            <div class="order-total-val">₹${order.total.toFixed(2)}</div>
           </div>
           <a href="order-confirmation.html?id=${order.id}" class="btn btn-secondary btn-sm">
             View Order
